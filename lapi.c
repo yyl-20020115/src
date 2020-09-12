@@ -125,6 +125,7 @@ LUA_API void lua_xmove(lua_State* from, lua_State* to, int n) {
     api_check(from, to->ci->top - to->top >= n, "stack overflow");
     from->top -= n;
     for (i = 0; i < n; i++) {
+        //NOTICE: object reference copy (rc?)
         setobjs2s(to, to->top, from->top + i);
         to->top++;  /* stack already checked by previous 'api_check' */
     }
@@ -178,6 +179,7 @@ LUA_API void lua_settop(lua_State* L, int idx) {
         api_check(L, idx <= ci->top - (func + 1), "new top too large");
         diff = ((func + 1) + idx) - L->top;
         for (; diff > 0; diff--)
+            //NOTICE: object reference set (rc--?)
             setnilvalue(s2v(L->top++));  /* clear new slots */
     }
     else {
@@ -200,6 +202,7 @@ LUA_API void lua_settop(lua_State* L, int idx) {
 static void reverse(lua_State* L, StkId from, StkId to) {
     for (; from < to; from++, to--) {
         TValue temp;
+        //NOTICE: no need for rc
         setobj(L, &temp, s2v(from));
         setobjs2s(L, from, to);
         setobj2s(L, to, &temp);
@@ -231,6 +234,7 @@ LUA_API void lua_copy(lua_State* L, int fromidx, int toidx) {
     fr = index2value(L, fromidx);
     to = index2value(L, toidx);
     api_check(L, isvalid(L, to), "invalid index");
+    //NOTICE: object reference copy (rc?)
     setobj(L, to, fr);
     if (isupvalue(toidx))  /* function upvalue? */
         luaC_barrier(L, clCvalue(s2v(L->ci->func)), fr);
@@ -242,6 +246,7 @@ LUA_API void lua_copy(lua_State* L, int fromidx, int toidx) {
 
 LUA_API void lua_pushvalue(lua_State* L, int idx) {
     lua_lock(L);
+    //NOTICE: object reference copy (rc?)
     setobj2s(L, L->top, index2value(L, idx));
     api_incr_top(L);
     lua_unlock(L);
@@ -311,6 +316,7 @@ LUA_API void lua_arith(lua_State* L, int op) {
         api_checknelems(L, 2);  /* all other operations expect two operands */
     else {  /* for unary operations, add fake 2nd operand */
         api_checknelems(L, 1);
+        //NOTICE: object reference copy (rc++?)
         setobjs2s(L, L->top, L->top - 1);
         api_incr_top(L);
     }
@@ -498,6 +504,7 @@ LUA_API const char* lua_pushlstring(lua_State* L, const char* s, size_t len) {
     TString* ts;
     lua_lock(L);
     ts = (len == 0) ? luaS_new(L, "") : luaS_newlstr(L, s, len);
+    //NOTICE: object reference copy (rc?)
     setsvalue2s(L, L->top, ts);
     api_incr_top(L);
     luaC_checkGC(L);
@@ -508,11 +515,13 @@ LUA_API const char* lua_pushlstring(lua_State* L, const char* s, size_t len) {
 
 LUA_API const char* lua_pushstring(lua_State* L, const char* s) {
     lua_lock(L);
+    //NOTICE: object reference copy (rc?)
     if (s == NULL)
         setnilvalue(s2v(L->top));
     else {
         TString* ts;
         ts = luaS_new(L, s);
+        //NOTICE: object reference copy (rc?)
         setsvalue2s(L, L->top, ts);
         s = getstr(ts);  /* internal copy's address */
     }
@@ -527,6 +536,7 @@ LUA_API const char* lua_pushvfstring(lua_State* L, const char* fmt,
     va_list argp) {
     const char* ret;
     lua_lock(L);
+    //NOTICE: object reference copy (rc?)
     ret = luaO_pushvfstring(L, fmt, argp);
     luaC_checkGC(L);
     lua_unlock(L);
@@ -539,6 +549,7 @@ LUA_API const char* lua_pushfstring(lua_State* L, const char* fmt, ...) {
     va_list argp;
     lua_lock(L);
     va_start(argp, fmt);
+    //NOTICE: object reference copy (rc?)
     ret = luaO_pushvfstring(L, fmt, argp);
     va_end(argp);
     luaC_checkGC(L);
@@ -610,6 +621,7 @@ static int auxgetstr(lua_State* L, const TValue* t, const char* k) {
     const TValue* slot;
     TString* str = luaS_new(L, k);
     if (luaV_fastget(L, t, str, slot, luaH_getstr)) {
+        //NOTICE: object reference copy (rc?)
         setobj2s(L, L->top, slot);
         api_incr_top(L);
     }
@@ -636,6 +648,7 @@ LUA_API int lua_gettable(lua_State* L, int idx) {
     lua_lock(L);
     t = index2value(L, idx);
     if (luaV_fastget(L, t, s2v(L->top - 1), slot, luaH_get)) {
+        //NOTICE: object reference copy (rc?)
         setobj2s(L, L->top - 1, slot);
     }
     else
@@ -657,6 +670,7 @@ LUA_API int lua_geti(lua_State* L, int idx, lua_Integer n) {
     lua_lock(L);
     t = index2value(L, idx);
     if (luaV_fastgeti(L, t, n, slot)) {
+        //NOTICE: object reference copy (rc?)
         setobj2s(L, L->top, slot);
     }
     else {
@@ -673,7 +687,7 @@ LUA_API int lua_geti(lua_State* L, int idx, lua_Integer n) {
 static int finishrawget(lua_State* L, const TValue* val) {
     if (isempty(val))  /* avoid copying empty items to the stack */
         setnilvalue(s2v(L->top));
-    else
+    else //NOTICE: object reference copy (rc?)
         setobj2s(L, L->top, val);
     api_incr_top(L);
     lua_unlock(L);
@@ -858,6 +872,7 @@ static void aux_rawset(lua_State* L, int idx, TValue* key, int n) {
     api_checknelems(L, n);
     t = gettable(L, idx);
     slot = luaH_set(L, t, key);
+    //NOTICE: object reference copy (rc?)
     setobj2t(L, slot, s2v(L->top - 1));
     invalidateTMcache(t);
     luaC_barrierback(L, obj2gco(t), s2v(L->top - 1));
