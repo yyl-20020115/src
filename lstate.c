@@ -464,4 +464,7 @@ void luaE_warnerror(lua_State* L, const char* where) {
     luaE_warning(L, msg, 1);
     luaE_warning(L, ")", 0);
 }
-
+//
+//inline struct GCObject* obj2gco(const TValue* v) {
+//    return check_exp((v)->tt >= LUA_TSTRING, &(cast_u(v)->gc));
+//}

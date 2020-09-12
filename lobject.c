@@ -581,3 +581,83 @@ void luaO_chunkid(char* out, const char* source, size_t srclen) {
     }
 }
 
+inline void setthvalue(lua_State* L, TValue* obj, lua_State* x) {
+    TValue* io = (obj); 
+    lua_State* x_ = (x);
+    set_val_gc(io, obj2gco(x_)); 
+    settt_(io, ctb(LUA_VTHREAD));
+    checkliveness(L, io);
+}
+inline struct lua_State* thvalue(const TValue* o)
+{
+    return check_exp(ttisthread(o), gco2th(get_val_(o).gc));
+}
+inline struct TString* tsvalueraw(Value v) {
+    return (gco2ts((v).gc));
+}
+inline struct TString* tsvalue(const TValue* o) {
+    return check_exp(ttisstring(o), gco2ts(get_val_(o).gc));
+}
+inline void setsvalue(lua_State* L, TValue* obj,struct TString* x) {
+    TValue* io = (obj); 
+    TString* x_ = (x); 
+    set_val_gc(io, obj2gco(x_)); 
+    settt_(io, ctb(x_->tt)); 
+    checkliveness(L, io);
+}
+inline struct Udata* uvalue(const TValue* o) {
+    return check_exp(ttisfulluserdata(o), gco2u(get_val_(o).gc));
+}
+inline void setuvalue(struct lua_State* L, TValue* obj, struct Udata* x) {
+    TValue* io = (obj);
+    Udata* x_ = (x);
+    set_val_gc(io, obj2gco(x_));
+    settt_(io, ctb(LUA_VUSERDATA));
+    checkliveness(L, io);
+}
+
+//#define clvalue(o)	check_exp(ttisclosure(o), gco2cl(get_val_(o).gc))
+inline Closure* clvalue(TValue* o) {
+    return check_exp(ttisclosure(o), gco2cl(get_val_(o).gc));
+}
+inline LClosure* clLvalue(TValue* o) {
+    return check_exp(ttisLclosure(o), gco2lcl(get_val_(o).gc));
+}
+
+inline lua_CFunction fvalue(const TValue* o) {
+    return check_exp(ttislcf(o), get_val_(o).f);
+}
+inline CClosure* clCvalue(const TValue* o) {
+    return check_exp(ttisCclosure(o), gco2ccl(get_val_(o).gc));
+}
+
+//#define fvalueraw(v)	((v).f)
+inline void setclLvalue(lua_State* L, TValue* obj, struct LClosure* x) {
+    TValue* io = (obj);
+    LClosure* x_ = (x);
+    set_val_gc(io, obj2gco(x_));
+    settt_(io, ctb(LUA_VLCL));
+    checkliveness(L, io);
+}
+inline void setclCvalue(lua_State* L, TValue* obj, struct CClosure* x) {
+    TValue* io = (obj);
+    CClosure* x_ = (x);
+    set_val_gc(io, obj2gco(x_));
+    settt_(io, ctb(LUA_VCCL));
+    checkliveness(L, io);
+}
+inline struct Table* hvalue(const TValue* o)
+{
+    return check_exp(ttistable(o), gco2t(get_val_(o).gc));
+}
+inline void sethvalue(lua_State* L, TValue* obj, struct Table* x) {
+    TValue* io = (obj);
+    Table* x_ = (x);
+    set_val_gc(io, obj2gco(x_));
+    settt_(io, ctb(LUA_VTABLE));
+    checkliveness(L, io);
+}
+inline TString* keystrval(const Node* node)
+{
+    return (gco2ts(keyval_ptr(node)->gc));
+}

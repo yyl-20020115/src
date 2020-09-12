@@ -343,7 +343,7 @@ union GCUnion {
 ** (The access to 'tt' tries to ensure that 'v' is actually a Lua object.)
 */
 #define obj2gco(v)	check_exp((v)->tt >= LUA_TSTRING, &(cast_u(v)->gc))
-
+//struct GCObject* obj2gco(const TValue* v);
 
 /* actual number of total bytes allocated */
 #define gettotalbytes(g)	cast(lu_mem, (g)->totalbytes + (g)->GCdebt)

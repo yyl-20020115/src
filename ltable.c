@@ -161,7 +161,7 @@ static Node* mainposition(const Table* t, int ktt, const Value* kvl) {
 ** Returns the main position of an element given as a 'TValue'
 */
 static Node* mainpositionTV(const Table* t, const TValue* key) {
-    return mainposition(t, rawtt(key), valraw(key));
+    return mainposition(t, rawtt(key), get_valraw(key));
 }
 
 
@@ -643,7 +643,7 @@ TValue* luaH_newkey(lua_State* L, Table* t, const TValue* key) {
             return luaH_set(L, t, key);  /* insert key into grown table */
         }
         lua_assert(!isdummy(t));
-        othern = mainposition(t, keytt(mp), &keyval(mp));
+        othern = mainposition(t, keytt(mp), keyval_ptr(mp));
         if (othern != mp) {  /* is colliding node out of its main position? */
           /* yes; move colliding node into free position */
             while (othern + gnext(othern) != mp)  /* find previous */
