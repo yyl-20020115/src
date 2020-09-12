@@ -69,6 +69,7 @@ typedef struct TValue {
 #define valraw(o)	(&val_(o))
 
 
+
 /* raw type tag of a TValue */
 #define rawtt(o)	((o)->tt_)
 
@@ -144,8 +145,10 @@ typedef union StackValue {
 typedef StackValue *StkId;
 
 /* convert a 'StackValue' to a 'TValue' */
-#define s2v(o)	(&(o)->val)
-
+//#define s2v(o)	(&(o)->val)
+inline TValue* s2v(StkId s) {
+    return &(s->val);
+}
 
 
 /*
@@ -172,7 +175,7 @@ typedef StackValue *StkId;
 #define ttisstrictnil(o)	checktag((o), LUA_VNIL)
 
 
-#define setnilvalue(obj) settt_(obj, LUA_VNIL)
+#define setnilvalue(obj)  settt_(obj, LUA_VNIL)
 
 
 #define isabstkey(v)		checktag((v), LUA_VABSTKEY)
@@ -268,6 +271,9 @@ typedef struct GCObject {
   CommonHeader;
 } GCObject;
 
+
+LUAI_FUNC long long luaC_addref(GCObject* o);
+LUAI_FUNC long long luaC_relref(GCObject* o);
 
 /* Bit mark for collectable types */
 #define BIT_ISCOLLECTABLE	(1 << 6)
@@ -781,7 +787,6 @@ LUAI_FUNC const char *luaO_pushvfstring (lua_State *L, const char *fmt,
                                                        va_list argp);
 LUAI_FUNC const char *luaO_pushfstring (lua_State *L, const char *fmt, ...);
 LUAI_FUNC void luaO_chunkid (char *out, const char *source, size_t srclen);
-
 
 #endif
 

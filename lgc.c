@@ -232,7 +232,6 @@ void luaC_fix(lua_State* L, GCObject* o) {
     g->fixedgc = o;
 }
 
-
 /*
 ** create a new collectable object (with given type and size) and link
 ** it to 'allgc' list.
@@ -244,6 +243,8 @@ GCObject* luaC_newobj(lua_State* L, int tt, size_t sz) {
     o->tt = tt;
     o->next = g->allgc;
     g->allgc = o;
+    //NOTICE: added by Yilin
+    luaC_addref(o);
     return o;
 }
 

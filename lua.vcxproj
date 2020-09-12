@@ -19,6 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cstl\src\c_algorithms.c" />
+    <ClCompile Include="cstl\src\c_array.c" />
+    <ClCompile Include="cstl\src\c_deque.c" />
+    <ClCompile Include="cstl\src\c_list.c" />
+    <ClCompile Include="cstl\src\c_map.c" />
+    <ClCompile Include="cstl\src\c_rb.c" />
+    <ClCompile Include="cstl\src\c_set.c" />
+    <ClCompile Include="cstl\src\c_util.c" />
     <ClCompile Include="entry.c" />
     <ClCompile Include="lapi.c" />
     <ClCompile Include="lauxlib.c" />
@@ -42,6 +50,7 @@
     <ClCompile Include="lopcodes.c" />
     <ClCompile Include="loslib.c" />
     <ClCompile Include="lparser.c" />
+    <ClCompile Include="lref.c" />
     <ClCompile Include="lstate.c" />
     <ClCompile Include="lstring.c" />
     <ClCompile Include="lstrlib.c" />
@@ -53,9 +62,19 @@
     <ClCompile Include="lundump.c" />
     <ClCompile Include="lutf8lib.c" />
     <ClCompile Include="lvm.c" />
-    <ClCompile Include="lzio.c" />
+    <ClCompile Include="_lzio.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cstl\inc\c_algorithms.h" />
+    <ClInclude Include="cstl\inc\c_array.h" />
+    <ClInclude Include="cstl\inc\c_deque.h" />
+    <ClInclude Include="cstl\inc\c_errors.h" />
+    <ClInclude Include="cstl\inc\c_iterator.h" />
+    <ClInclude Include="cstl\inc\c_lib.h" />
+    <ClInclude Include="cstl\inc\c_list.h" />
+    <ClInclude Include="cstl\inc\c_map.h" />
+    <ClInclude Include="cstl\inc\c_rb.h" />
+    <ClInclude Include="cstl\inc\c_set.h" />
     <ClInclude Include="lapi.h" />
     <ClInclude Include="lauxlib.h" />
     <ClInclude Include="lcode.h" />
@@ -143,15 +162,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)\cstl\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)\cstl\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)\cstl\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)\cstl\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="cstl">
+      <UniqueIdentifier>{1ec5b555-ac83-4941-a7b4-fb84411492ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cstl\src">
+      <UniqueIdentifier>{6f9837d5-376c-44d7-9394-b50d76f30a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cstl\inc">
+      <UniqueIdentifier>{40a92f10-b804-48ab-8b69-d3e9ad0e8f96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lapi.c">
@@ -111,13 +120,40 @@
     <ClCompile Include="lvm.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="lzio.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="luac.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="entry.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_algorithms.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_array.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_deque.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_list.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_map.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_rb.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_set.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cstl\src\c_util.c">
+      <Filter>cstl\src</Filter>
+    </ClCompile>
+    <ClCompile Include="lref.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="_lzio.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -205,6 +241,36 @@
     </ClInclude>
     <ClInclude Include="lzio.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_algorithms.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_array.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_deque.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_errors.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_iterator.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_lib.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_list.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_map.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_rb.h">
+      <Filter>cstl\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="cstl\inc\c_set.h">
+      <Filter>cstl\inc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
