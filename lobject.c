@@ -661,3 +661,23 @@ inline TString* keystrval(const Node* node)
 {
     return (gco2ts(keyval_ptr(node)->gc));
 }
+/* set a value's tag */
+//#define settt_(o,t)	((o)->tt_=(t))
+inline int settt_(const TValue* o, lu_byte t) {
+    if (t == LUA_VNIL)
+    {
+        switch (o->tt_ & 0xf) {
+        case LUA_TLIGHTUSERDATA:
+        case LUA_TSTRING:
+        case LUA_TTABLE:
+        case LUA_TUSERDATA:
+        case LUA_TTHREAD:
+        case LUA_TFUNCTION:
+        case LUA_TUPVAL:
+        case LUA_TPROTO:
+            //TODO
+            break;
+        }
+    }
+    return ((TValue*)o)->tt_ = t;
+}

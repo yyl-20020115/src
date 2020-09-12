@@ -147,9 +147,7 @@ inline void checkliveness(lua_State* L, const TValue* obj) {
 
 /* set a value's tag */
 //#define settt_(o,t)	((o)->tt_=(t))
-inline int settt_(const TValue* o, lu_byte t) {
-    return ((TValue*)o)->tt_ = t;
-}
+extern int settt_(const TValue* o, lu_byte t);
 
 /* main macro to copy values (from 'obj1' to 'obj2') */
 //#define setobj(L,obj1,obj2) \
