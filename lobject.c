@@ -585,7 +585,7 @@ inline void setthvalue(lua_State* L, TValue* obj, lua_State* x) {
     TValue* io = (obj); 
     lua_State* x_ = (x);
     set_val_gc(io, obj2gco(x_)); 
-    settt_(io, ctb(LUA_VTHREAD));
+    settt_(L,io, ctb(LUA_VTHREAD));
     checkliveness(L, io);
 }
 inline struct lua_State* thvalue(const TValue* o)
@@ -602,7 +602,7 @@ inline void setsvalue(lua_State* L, TValue* obj,struct TString* x) {
     TValue* io = (obj); 
     TString* x_ = (x); 
     set_val_gc(io, obj2gco(x_)); 
-    settt_(io, ctb(x_->tt)); 
+    settt_(L,io, ctb(x_->tt)); 
     checkliveness(L, io);
 }
 inline struct Udata* uvalue(const TValue* o) {
@@ -612,7 +612,7 @@ inline void setuvalue(struct lua_State* L, TValue* obj, struct Udata* x) {
     TValue* io = (obj);
     Udata* x_ = (x);
     set_val_gc(io, obj2gco(x_));
-    settt_(io, ctb(LUA_VUSERDATA));
+    settt_(L,io, ctb(LUA_VUSERDATA));
     checkliveness(L, io);
 }
 
@@ -636,14 +636,14 @@ inline void setclLvalue(lua_State* L, TValue* obj, struct LClosure* x) {
     TValue* io = (obj);
     LClosure* x_ = (x);
     set_val_gc(io, obj2gco(x_));
-    settt_(io, ctb(LUA_VLCL));
+    settt_(L,io, ctb(LUA_VLCL));
     checkliveness(L, io);
 }
 inline void setclCvalue(lua_State* L, TValue* obj, struct CClosure* x) {
     TValue* io = (obj);
     CClosure* x_ = (x);
     set_val_gc(io, obj2gco(x_));
-    settt_(io, ctb(LUA_VCCL));
+    settt_(L,io, ctb(LUA_VCCL));
     checkliveness(L, io);
 }
 inline struct Table* hvalue(const TValue* o)
@@ -654,7 +654,7 @@ inline void sethvalue(lua_State* L, TValue* obj, struct Table* x) {
     TValue* io = (obj);
     Table* x_ = (x);
     set_val_gc(io, obj2gco(x_));
-    settt_(io, ctb(LUA_VTABLE));
+    settt_(L,io, ctb(LUA_VTABLE));
     checkliveness(L, io);
 }
 inline TString* keystrval(const Node* node)
@@ -663,9 +663,9 @@ inline TString* keystrval(const Node* node)
 }
 /* set a value's tag */
 //#define settt_(o,t)	((o)->tt_=(t))
-inline int settt_(const TValue* o, lu_byte t) {
-    if (t == LUA_VNIL)
-    {
+inline int settt_(lua_State* L, const TValue* o, lu_byte t) {
+    //
+    if (t == LUA_TNIL) {
         switch (o->tt_ & 0xf) {
         case LUA_TLIGHTUSERDATA:
         case LUA_TSTRING:
@@ -675,9 +675,39 @@ inline int settt_(const TValue* o, lu_byte t) {
         case LUA_TFUNCTION:
         case LUA_TUPVAL:
         case LUA_TPROTO:
-            //TODO
+            //decrease the reference count
+            luaC_relref(L, o->value_.gc);
             break;
         }
     }
     return ((TValue*)o)->tt_ = t;
+}
+inline void setobj(lua_State* L, TValue* obj1, const TValue* obj2) {
+    TValue* io1 = (obj1);
+    const TValue* io2 = (obj2);
+    io1->value_ = io2->value_;
+    if ((io2->tt_ & 0xf) != LUA_TNIL)
+    {
+        settt_(L, io1, io2->tt_);
+
+        switch (io2->tt_ & 0xf) {
+        case LUA_TLIGHTUSERDATA:
+        case LUA_TSTRING:
+        case LUA_TTABLE:
+        case LUA_TUSERDATA:
+        case LUA_TTHREAD:
+        case LUA_TFUNCTION:
+        case LUA_TUPVAL:
+        case LUA_TPROTO:
+            //increase the reference count
+            luaC_addref(L, io2->value_.gc);
+            break;
+        }
+    }
+    else {
+        //obj2 is nil
+        //we should do nothing
+    }
+    checkliveness(L, io1);
+    lua_assert(!isnonstrictnil(io1));
 }

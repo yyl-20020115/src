@@ -14,15 +14,14 @@
 #include <string.h>
 
 #include "lua.h"
-
-#include "ldebug.h"
 #include "ldo.h"
-#include "lfunc.h"
 #include "lmem.h"
+#include "lzio.h"
+#include "lfunc.h"
+#include "ldebug.h"
 #include "lobject.h"
 #include "lstring.h"
 #include "lundump.h"
-#include "lzio.h"
 
 
 #if !defined(luai_verifycode)

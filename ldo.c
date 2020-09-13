@@ -99,7 +99,7 @@ void luaD_seterrorobj(lua_State* L, int errcode, StkId oldtop) {
         break;
     }
     case CLOSEPROTECT: {
-        setnilvalue(s2v(oldtop));  /* no error message */
+        setnilvalue( s2v(oldtop));  /* no error message */
         break;
     }
     default: {
@@ -193,7 +193,7 @@ int luaD_reallocstack(lua_State* L, int newsize, int raiseerror) {
         else return 0;  /* do not raise an error */
     }
     for (; lim < newsize; lim++)
-        setnilvalue(s2v(newstack + lim)); /* erase new segment */
+        setnilvalue( s2v(newstack + lim)); /* erase new segment */
     correctstack(L, L->stack, newstack);
     L->stack = newstack;
     L->stacksize = newsize;
@@ -379,7 +379,7 @@ static void moveresults(lua_State* L, StkId res, int nres, int wanted) {
         return;
     case 1:  /* one value needed */
         if (nres == 0)   /* no results? */
-            setnilvalue(s2v(res));  /* adjust with nil */
+            setnilvalue( s2v(res));  /* adjust with nil */
         else
             setobjs2s(L, res, L->top - nres);  /* move it to proper place */
         L->top = res + 1;
@@ -403,7 +403,7 @@ static void moveresults(lua_State* L, StkId res, int nres, int wanted) {
     for (i = 0; i < nres && i < wanted; i++)
         setobjs2s(L, res + i, firstresult + i);
     for (; i < wanted; i++)  /* complete wanted number of results */
-        setnilvalue(s2v(res + i));
+        setnilvalue( s2v(res + i));
     L->top = res + wanted;  /* top points after the last result */
 }
 
@@ -440,7 +440,7 @@ void luaD_pretailcall(lua_State* L, CallInfo* ci, StkId func, int narg1) {
     checkstackGC(L, fsize);
     func = ci->func;  /* moved-down function */
     for (; narg1 <= nfixparams; narg1++)
-        setnilvalue(s2v(func + narg1));  /* complete missing arguments */
+        setnilvalue( s2v(func + narg1));  /* complete missing arguments */
     ci->top = func + 1 + fsize;  /* top for new function */
     lua_assert(ci->top <= L->stack_last);
     ci->u.l.savedpc = p->code;  /* starting point */
@@ -499,7 +499,7 @@ retry:
         ci->func = func;
         L->ci = ci;
         for (; narg < nfixparams; narg++)
-            setnilvalue(s2v(L->top++));  /* complete missing arguments */
+            setnilvalue( s2v(L->top++));  /* complete missing arguments */
         lua_assert(ci->top <= L->stack_last);
         luaV_execute(L, ci);  /* run the function */
         break;

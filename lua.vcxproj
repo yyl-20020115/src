@@ -62,7 +62,7 @@
     <ClCompile Include="lundump.c" />
     <ClCompile Include="lutf8lib.c" />
     <ClCompile Include="lvm.c" />
-    <ClCompile Include="_lzio.c" />
+    <ClCompile Include="lzio.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cstl\inc\c_algorithms.h" />

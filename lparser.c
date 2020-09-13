@@ -332,6 +332,7 @@ static void removevars(FuncState* fs, int tolevel) {
         if (var)  /* does it have debug information? */
             var->endpc = fs->pc;
     }
+    //TODO: try Set NIL to variable
 }
 
 
@@ -669,6 +670,7 @@ static void leaveblock(FuncState* fs) {
     if (!hasclose && bl->previous && bl->upval)
         luaK_codeABC(fs, OP_CLOSE, stklevel, 0, 0);
     fs->bl = bl->previous;
+    //NOTICE: here free vars
     removevars(fs, bl->nactvar);
     lua_assert(bl->nactvar == fs->nactvar);
     fs->freereg = stklevel;  /* free registers */

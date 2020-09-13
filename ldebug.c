@@ -297,7 +297,7 @@ static int nextline(const Proto* p, int currentline, int pc) {
 
 static void collectvalidlines(lua_State* L, Closure* f) {
     if (noLuaClosure(f)) {
-        setnilvalue(s2v(L->top));
+        setnilvalue( s2v(L->top));
         api_incr_top(L);
     }
     else {

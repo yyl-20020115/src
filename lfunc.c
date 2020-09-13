@@ -51,7 +51,7 @@ void luaF_initupvals(lua_State* L, LClosure* cl) {
         GCObject* o = luaC_newobj(L, LUA_VUPVAL, sizeof(UpVal));
         UpVal* uv = gco2upv(o);
         uv->v = &uv->u.value;  /* make it closed */
-        setnilvalue(uv->v);
+        setnilvalue( uv->v);
         cl->upvals[i] = uv;
         luaC_objbarrier(L, cl, o);
     }

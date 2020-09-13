@@ -147,7 +147,7 @@ inline void checkliveness(lua_State* L, const TValue* obj) {
 
 /* set a value's tag */
 //#define settt_(o,t)	((o)->tt_=(t))
-extern int settt_(const TValue* o, lu_byte t);
+extern int settt_(lua_State* L, const TValue* o, lu_byte t);
 
 /* main macro to copy values (from 'obj1' to 'obj2') */
 //#define setobj(L,obj1,obj2) \
@@ -155,15 +155,7 @@ extern int settt_(const TValue* o, lu_byte t);
 //          io1->value_ = io2->value_; settt_(io1, io2->tt_); \
 //	  checkliveness(L,io1); lua_assert(!isnonstrictnil(io1)); }
 
-inline void setobj(lua_State* L, TValue* obj1, const TValue* obj2) {
-    TValue* io1 = (obj1);
-    const TValue* io2 = (obj2);
-    io1->value_ = io2->value_; 
-    settt_(io1, io2->tt_);
-    checkliveness(L, io1); 
-    lua_assert(!isnonstrictnil(io1));
-}
-
+extern void setobj(lua_State* L, TValue* obj1, const TValue* obj2);
 /*
 ** Different types of assignments, according to source and destination.
 ** (They are mostly equal now, but may be different in the future.)
@@ -246,7 +238,7 @@ inline lu_byte ttisstrictnil(const TValue* o) {
 
 //#define setnilvalue(obj)  settt_(obj, LUA_VNIL)
 inline void setnilvalue(const TValue* obj) {
-    settt_(obj, LUA_VNIL);
+    settt_(0, obj, LUA_VNIL);
 }
 
 //#define isabstkey(v)		checktag((v), LUA_VABSTKEY)
@@ -279,7 +271,7 @@ inline lu_byte isempty(const TValue* v) {
 /* mark an entry as empty */
 //#define setempty(v)		settt_(v, LUA_VEMPTY)
 inline void setempty(const TValue* v) {
-    settt_(v, LUA_VEMPTY);
+    settt_(0, v, LUA_VEMPTY);
 }
 
 
@@ -317,12 +309,12 @@ inline lu_byte l_isfalse(const TValue* o) {
 //#define setbfvalue(obj)		settt_(obj, LUA_VFALSE)
 inline void setbfvalue(const TValue* obj)
 {
-    settt_(obj, LUA_VFALSE);
+    settt_(0, obj, LUA_VFALSE);
 }
 //#define setbtvalue(obj)		settt_(obj, LUA_VTRUE)
 inline void setbtvalue(const TValue* obj)
 {
-    settt_(obj, LUA_VTRUE);
+    settt_(0, obj, LUA_VTRUE);
 }
 /* }================================================================== */
 /* Bit mark for collectable types */
@@ -382,8 +374,8 @@ typedef struct GCObject {
   CommonHeader;
 } GCObject;
 
-LUAI_FUNC long long luaC_addref(GCObject* o);
-LUAI_FUNC long long luaC_relref(GCObject* o);
+LUAI_FUNC int luaC_addref(lua_State* L, GCObject* o);
+LUAI_FUNC int luaC_relref(lua_State* L, GCObject* o);
 
 //#define iscollectable(o)	(rawtt(o) & BIT_ISCOLLECTABLE)
 inline lu_byte iscollectable(const TValue* o) {
@@ -406,7 +398,7 @@ inline void setgcovalue(lua_State* L, TValue* obj, GCObject* x)
     TValue* io = (obj);
     GCObject* i_g = (x);
     set_val_gc(io, i_g); 
-    settt_(io, ctb(i_g->tt));
+    settt_(L, io, ctb(i_g->tt));
 }
 /* Macros for internal tests */
 /* collectable object has the same tag as the original value */
@@ -468,27 +460,35 @@ inline lua_Integer ivalueraw(Value v)
 //#define setfltvalue(obj,x) \
 //  { TValue *io=(obj); set_val_n(io,x); settt_(io, LUA_VNUMFLT); }
 inline void setfltvalue(TValue* obj, lua_Number x) {
-    TValue* io = (obj); set_val_n(io, x); settt_(io, LUA_VNUMFLT);
+    TValue* io = (obj); 
+    set_val_n(io, x); 
+    settt_(0, io, LUA_VNUMFLT);
 }
 //#define chgfltvalue(obj,x) \
 //  { TValue *io=(obj); lua_assert(ttisfloat(io)); set_val_n(io,x); }
 inline void chgfltvalue(TValue* obj, lua_Number x)
 {
-    TValue* io = (obj); lua_assert(ttisfloat(io)); set_val_n(io, x);
+    TValue* io = (obj); 
+    lua_assert(ttisfloat(io)); 
+    set_val_n(io, x);
 }
 
 //#define setivalue(obj,x) \
 //  { TValue *io=(obj); set_val_i(io,x); settt_(io, LUA_VNUMINT); }
 inline void setivalue(TValue* obj, lua_Integer x)
 {
-    TValue* io = (obj); set_val_i(io, x); settt_(io, LUA_VNUMINT);
+    TValue* io = (obj); 
+    set_val_i(io, x); 
+    settt_(0,io, LUA_VNUMINT);
 }
 
 //#define chgivalue(obj,x) \
 //  { TValue *io=(obj); lua_assert(ttisinteger(io)); set_val_i(io,x); }
 inline void chgivalue(TValue* obj, lua_Integer x) 
 { 
-    TValue* io = (obj); lua_assert(ttisinteger(io)); set_val_i(io, x); 
+    TValue* io = (obj); 
+    lua_assert(ttisinteger(io)); 
+    set_val_i(io, x); 
 }
 
 /* }================================================================== */
@@ -625,7 +625,7 @@ inline void* pvalueraw(Value v) {
 inline void setpvalue(TValue* obj, void* x) {
     TValue* io = (obj); 
     set_val_p(io, x); 
-    settt_(io, LUA_VLIGHTUSERDATA);
+    settt_(0, io, LUA_VLIGHTUSERDATA);
 }
 
 //#define setuvalue(L,obj,x) \
@@ -829,11 +829,11 @@ inline void setclLvalue2s(lua_State* L, StkId o, struct LClosure* cl) {
 
 //#define setfvalue(obj,x) \
 //  { TValue *io=(obj); set_val_f(io,x); settt_(io, LUA_VLCF); }
-inline void setfvalue(TValue* obj, lua_CFunction x) 
+inline void setfvalue(lua_State* L, TValue* obj, lua_CFunction x)
 { 
     TValue* io = (obj); 
     set_val_f(io, x); 
-    settt_(io, LUA_VLCF); 
+    settt_(L, io, LUA_VLCF); 
 }
 
 //#define setclCvalue(L,obj,x) \
@@ -987,7 +987,7 @@ typedef struct Table {
   Node *node;
   Node *lastfree;  /* any free position is before this position */
   struct Table *metatable;
-  GCObject *gclist;
+  GCObject *gclist; /*list of tables for gc to collect*/
 } Table;
 
 /*

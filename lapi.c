@@ -561,7 +561,7 @@ LUA_API const char* lua_pushfstring(lua_State* L, const char* fmt, ...) {
 LUA_API void lua_pushcclosure(lua_State* L, lua_CFunction fn, int n) {
     lua_lock(L);
     if (n == 0) {
-        setfvalue(s2v(L->top), fn);
+        setfvalue(L, s2v(L->top), fn);
         api_incr_top(L);
     }
     else {
