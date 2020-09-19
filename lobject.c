@@ -661,23 +661,34 @@ inline TString* keystrval(const Node* node)
 {
     return (gco2ts(keyval_ptr(node)->gc));
 }
+inline int luaC_should_do_rc(lu_byte tt) {
+    switch (tt & 0x0f) {
+    case LUA_TSTRING:
+    case LUA_TTABLE:
+    case LUA_TUSERDATA:
+    case LUA_TTHREAD:
+    case LUA_TUPVAL:
+    case LUA_TPROTO:
+        return 1;
+    case LUA_TFUNCTION:
+        //light c function not included
+        return (tt == LUA_VLCL) || (tt == LUA_VCCL);
+    default:
+        return 0;
+    }
+}
 /* set a value's tag */
 //#define settt_(o,t)	((o)->tt_=(t))
 inline int settt_(lua_State* L, const TValue* o, lu_byte t) {
     //
     if (t == LUA_TNIL) {
-        switch (o->tt_ & 0xf) {
-        case LUA_TLIGHTUSERDATA:
-        case LUA_TSTRING:
-        case LUA_TTABLE:
-        case LUA_TUSERDATA:
-        case LUA_TTHREAD:
-        case LUA_TFUNCTION:
-        case LUA_TUPVAL:
-        case LUA_TPROTO:
+        if (luaC_should_do_rc(o->tt_)) {
             //decrease the reference count
             luaC_relref(L, o->value_.gc);
-            break;
+        }
+        else {
+            //erase this value to 0 directly(treat as void*)
+           ((TValue*)o)->value_.p = 0;
         }
     }
     return ((TValue*)o)->tt_ = t;
@@ -689,22 +700,13 @@ inline void setobj(lua_State* L, TValue* obj1, const TValue* obj2) {
     if ((io2->tt_ & 0xf) != LUA_TNIL)
     {
         settt_(L, io1, io2->tt_);
-
-        switch (io2->tt_ & 0xf) {
-        case LUA_TLIGHTUSERDATA:
-        case LUA_TSTRING:
-        case LUA_TTABLE:
-        case LUA_TUSERDATA:
-        case LUA_TTHREAD:
-        case LUA_TFUNCTION:
-        case LUA_TUPVAL:
-        case LUA_TPROTO:
+        if (luaC_should_do_rc(io2->tt_&0xf)) {
             //increase the reference count
             luaC_addref(L, io2->value_.gc);
-            break;
         }
     }
-    else {
+    else 
+    {
         //obj2 is nil
         //we should do nothing
     }

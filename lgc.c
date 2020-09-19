@@ -111,10 +111,6 @@ static void entersweep(lua_State* L);
 */
 
 
-/*
-** one after last element in a hash array
-*/
-#define gnodelast(h)	gnode(h, cast_sizet(sizenode(h)))
 
 
 static GCObject** getgclist(GCObject* o) {

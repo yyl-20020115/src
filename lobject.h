@@ -1122,6 +1122,7 @@ LUAI_FUNC const char *luaO_pushfstring (lua_State *L, const char *fmt, ...);
 LUAI_FUNC void luaO_chunkid (char *out, const char *source, size_t srclen);
 
 
+extern int luaC_should_do_rc(lu_byte tt);
 
 #endif
 

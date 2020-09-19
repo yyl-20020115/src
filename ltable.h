@@ -13,6 +13,10 @@
 #define gnode(t,i)	(&(t)->node[i])
 #define gval(n)		(&(n)->i_val)
 #define gnext(n)	((n)->u.next)
+/*
+** one after last element in a hash array
+*/
+#define gnodelast(h)	gnode(h, cast_sizet(sizenode(h)))
 
 
 #define invalidateTMcache(t)	((t)->flags = 0)
