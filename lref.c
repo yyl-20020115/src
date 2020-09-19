@@ -139,9 +139,13 @@ int luaC_process_unlink_thread(lua_State* L, lua_State* t, struct cstl_array* du
                 luaC_process_unlink_gc(L, sid->val.value_.gc, dup_array, collecting);
             }
         }
-        for (UpVal* uv = t->openupval; uv != 0; uv = uv->u.open.next)
-        {
-            mc += luaC_process_unlink_upval(L, uv, dup_array, collecting);
+        //upval
+        if (t->openupval != 0) {
+            for (UpVal* uv = t->openupval; uv != 0; uv = uv->u.open.next)
+            {
+                mc += luaC_process_unlink_upval(L, uv, dup_array, collecting);
+            }
+            t->openupval = 0;
         }
         
     }
